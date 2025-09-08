@@ -1,5 +1,5 @@
 # Use an official Node runtime as the base image
-FROM node:20-alpine
+FROM node:20-alpine3.18
 
 # Set the working directory in the container
 WORKDIR /src
@@ -23,7 +23,8 @@ RUN pnpm run build
 RUN npm install -g serve
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 4000
 
+RUN apk add xsel
 # Command to run the application
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["serve", "--no-clipboard", "-s", "dist", "-l", "4000"]
