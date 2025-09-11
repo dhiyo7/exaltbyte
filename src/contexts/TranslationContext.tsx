@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface TranslationContextType {
   language: 'id' | 'en';
@@ -64,7 +64,29 @@ const translations = {
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
 export const TranslationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<'id' | 'en'>('id');
+  const [language, setLanguage] = useState<'id' | 'en'>('en'); // Default to English
+
+  useEffect(() => {
+    // Detect user's location based on timezone
+    const detectLocation = () => {
+      try {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        // Check if timezone is in Indonesia
+        const isIndonesia = timezone.includes('Asia/Jakarta') ||
+                           timezone.includes('Asia/Pontianak') ||
+                           timezone.includes('Asia/Makassar') ||
+                           timezone.includes('Asia/Jayapura');
+
+        setLanguage(isIndonesia ? 'id' : 'en');
+      } catch (error) {
+        // Fallback to English if timezone detection fails
+        setLanguage('en');
+      }
+    };
+
+    detectLocation();
+  }, []);
 
   const t = (key: string): string => {
     return translations[language][key as keyof typeof translations['id']] || key;
